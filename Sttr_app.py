@@ -6,7 +6,7 @@ from utils.CustumerData import CustmerData
 
 # Configure the Streamlit page
 st.set_page_config(
-    page_title=f"{APP_NAME} v{VERSION}",
+    page_title=f"{'Churn-Detection'} v{1.0}",
     page_icon="🏦",
     layout="wide"
 )
