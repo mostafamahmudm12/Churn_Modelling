@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from utils.inference import predict_new
-from utils.config import APP_NAME, VERSION, Preprocessor, Forest_Models
+from utils.config import APP_NAME,VERSION,Preprocessor,Forest_Models
 from utils.CustumerData import CustmerData
 
 # Configure the Streamlit page
