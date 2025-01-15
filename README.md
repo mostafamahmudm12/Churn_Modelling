@@ -1,83 +1,198 @@
-'''Overview:
-The Churn Modelling Project is designed to predict customer churn for a business. Churn refers to the loss of customers, and predicting it can help businesses take proactive steps to retain valuable customers. This project leverages machine learning techniques to analyze customer data and identify patterns that lead to churn.
+# Bank Customer Prediction System
 
-'''
-Features:
+## 📁 Project Structure
+```
+project_root/
+│   .env                    # Environment variables (private)
+│   .env.example           # Example environment variables template
+│   .gitignore             # Git ignore rules
+│   mainroot.py            # FastAPI main application
+│   README.md              # Project documentation
+│   requirements.txt       # Project dependencies
+│   Sttr_app.py           # Streamlit application
+│
+├───.devcontainer/
+│       devcontainer.json  # Development container configuration
+│
+├───Datasets/
+│       Churn_Modelling.csv    # Training dataset
+│
+├───models/
+│       forest_tuned.pkl       # Trained Random Forest model
+│       Preprocessor.pkl       # Data preprocessing pipeline
+│       XGoost.pkl            # Trained XGBoost model
+│
+├───Notebooks/
+│       main.ipynb            # Model development notebook
+│
+└───utils/
+    │   config.py            # Configuration settings
+    │   CustumerData.py      # Data model definitions
+    │   inference.py         # Prediction logic
+    │   __init__.py          # Package initialization
+```
 
-Customer Data Analysis: Insights into customer behavior and attributes.
+## 🚀 Features
+- Dual interface support:
+  - FastAPI backend (`mainroot.py`)
+  - Streamlit web interface (`Sttr_app.py`)
+- Multiple ML models:
+  - Random Forest (tuned)
+  - XGBoost
+- Containerized development environment
+- Environment variable management
+- Comprehensive data preprocessing pipeline
 
-Machine Learning Models: Training and evaluation of models for churn prediction.
+## 📋 Prerequisites
+- Python 3.12
+- Docker (for development container)
+- Git
 
-Visualization: Clear and concise representation of data and results.
+## 🔧 Installation
 
-API Integration: Optional deployment of the model as an API for real-time predictions.'''
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <project-directory>
+```
 
-'''Dataset
+2. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your configuration
+```
 
-The dataset used in this project contains customer information such as:
+3. Create and activate virtual environment:
+```bash
+python -m venv venv
+# Windows
+.\venv\Scripts\activate
+# Linux/MacOS
+source venv/bin/activate
+```
 
-Customer ID
+4. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-Credit Score
+## 💻 Usage
 
-Geography
+### Using Development Container
+1. Install Docker and VS Code with Remote-Containers extension
+2. Open project in VS Code
+3. Click "Reopen in Container" when prompted
 
-Gender
+### Running FastAPI Application
+```bash
+python mainroot.py
+```
+Access the API documentation at `http://localhost:8000/docs`
 
-Age
+### Running Streamlit Interface
+```bash
+streamlit run Sttr_app.py
+```
+Access the web interface at `http://localhost:8501`
 
-Tenure
+## 🔑 Environment Variables
+Create `.env` file based on `.env.example`:
+```env
+SECRET_KEY_TOKEN=your_secret_key
+APP_NAME=your_app_name
+VERSION=your_version
+```
 
-Balance
+## 📊 Models
 
-Number of Products
+### Random Forest (`forest_tuned.pkl`)
+- Tuned for optimal performance
+- Used for primary predictions
 
-Has Credit Card
+### XGBoost (`XGoost.pkl`)
+- Alternative model
+- Optimized for specific use cases
 
-Is Active Member
+### Preprocessor (`Preprocessor.pkl`)
+- Handles data transformation
+- Feature scaling and encoding
 
-Estimated Salary
+## 📈 Dataset
+The `Churn_Modelling.csv` dataset includes:
+- Customer demographic information
+- Banking behavior data
+- Churn status
 
-Exited (Target Variable: 1 for churned, 0 for retained)'''
+## 🛠️ Development
 
-'''
-Workflow
+### Model Training
+1. Open `Notebooks/main.ipynb`
+2. Follow the training pipeline
+3. Export models to `models/` directory
 
-Data Preprocessing:
+### API Development
+Modify `mainroot.py` for API changes:
+```python
+@app.post('/predict/forest', tags=['Models'])
+async def predict_forest(data: CustmerData, api_key: str = Depends(verify_api_key)) -> dict:
+    # Implementation
+```
 
-Handle missing values.
+### Streamlit Interface Development
+Modify `Sttr_app.py` for UI changes.
 
-Encode categorical variables.
+## 🧪 Testing
+1. API testing:
+```bash
+# Add your testing commands
+```
 
-Normalize numerical features.
+2. Model testing:
+```bash
+# Add your testing commands
+```
 
-Exploratory Data Analysis (EDA):
+## 🔒 Security
+- API key authentication implemented
+- Environment variable protection
+- Docker container isolation
 
-Understand data distribution and correlations.
+## 🤝 Contributing
+1. Fork the repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Submit pull request
 
-Identify key features influencing churn.
+## 📝 License
+[Add your license information]
 
-Model Development:
+## ⚠️ Troubleshooting
 
-Split data into training and testing sets.
+### Common Issues
+1. Model Loading Errors:
+   - Verify model files in `models/` directory
+   - Check Python version compatibility
 
-Train machine learning models such as Logistic Regression, Random Forest, and Neural Networks.
+2. Environment Variables:
+   - Ensure `.env` file exists
+   - Check variable names match `.env.example`
 
-Evaluate model performance using metrics like accuracy, precision, recall, and F1-score.
+3. Container Issues:
+   - Verify Docker installation
+   - Check devcontainer.json configuration
 
-Model Deployment (Optional):
+## 📞 Support
+For support:
+- Open an issue
+- Contact [your-contact-information]
 
-Save the trained model using joblib or pickle.
+## 🔄 Version History
+- Current Version: [Your Version]
+- [Add version history]
 
-Deploy the model as a REST API using Flask or FastAPI.
-'''
-
-'''
-Tools and Technologies
-
-Programming Language: Python
-
-Libraries: Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn, TensorFlow/Keras (if using neural networks)
-
-Model Deployment: Flask, FastAPI (optional)
-'''
+## 🙏 Acknowledgments
+- FastAPI
+- Streamlit
+- scikit-learn
+- XGBoost
