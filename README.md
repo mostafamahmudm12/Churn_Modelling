@@ -1,10 +1,10 @@
-# Bank Customer Prediction System
+# Bank Customer Churn Prediction System
 
 ## 📁 Project Structure
 ```
 project_root/
 │   .env                    # Environment variables (private)
-│   .env.example           # Example environment variables template
+│   .env.example           # Environment variables template
 │   .gitignore             # Git ignore rules
 │   mainroot.py            # FastAPI main application
 │   README.md              # Project documentation
@@ -15,12 +15,12 @@ project_root/
 │       devcontainer.json  # Development container configuration
 │
 ├───Datasets/
-│       Churn_Modelling.csv    # Training dataset
+│       Churn_Modelling.csv    # Customer churn dataset
 │
 ├───models/
-│       forest_tuned.pkl       # Trained Random Forest model
+│       forest_tuned.pkl       # Tuned Random Forest model
 │       Preprocessor.pkl       # Data preprocessing pipeline
-│       XGoost.pkl            # Trained XGBoost model
+│       XGoost.pkl            # XGBoost model
 │
 ├───Notebooks/
 │       main.ipynb            # Model development notebook
@@ -30,18 +30,20 @@ project_root/
     │   CustumerData.py      # Data model definitions
     │   inference.py         # Prediction logic
     │   __init__.py          # Package initialization
+    │
+    └───__pycache__/        # Python cache files
 ```
 
 ## 🚀 Features
-- Dual interface support:
-  - FastAPI backend (`mainroot.py`)
-  - Streamlit web interface (`Sttr_app.py`)
+- Dual interface:
+  - FastAPI backend for API access
+  - Streamlit web interface for interactive use
 - Multiple ML models:
   - Random Forest (tuned)
   - XGBoost
-- Containerized development environment
-- Environment variable management
-- Comprehensive data preprocessing pipeline
+- Secure API with key authentication
+- Comprehensive data preprocessing
+- Docker container support
 
 ## 📋 Prerequisites
 - Python 3.12
@@ -50,146 +52,229 @@ project_root/
 
 ## 🔧 Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 ```bash
 git clone <repository-url>
 cd <project-directory>
 ```
 
-2. Set up environment variables:
+2. **Set up environment:**
 ```bash
+# Copy environment template
 cp .env.example .env
-# Edit .env with your configuration
+
+# Edit .env with your settings:
+APP_NAME=ChurnPredictor
+VERSION=1.0.0
+SECRET_KEY_TOKEN=your-secret-key
 ```
 
-3. Create and activate virtual environment:
+3. **Create virtual environment:**
 ```bash
 python -m venv venv
+
 # Windows
 .\venv\Scripts\activate
+
 # Linux/MacOS
 source venv/bin/activate
 ```
 
-4. Install dependencies:
+4. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
 ## 💻 Usage
 
-### Using Development Container
-1. Install Docker and VS Code with Remote-Containers extension
-2. Open project in VS Code
-3. Click "Reopen in Container" when prompted
-
-### Running FastAPI Application
+### FastAPI Application
 ```bash
 python mainroot.py
 ```
-Access the API documentation at `http://localhost:8000/docs`
+Access API documentation: `http://localhost:8000/docs`
 
-### Running Streamlit Interface
+### Streamlit Interface
 ```bash
 streamlit run Sttr_app.py
 ```
-Access the web interface at `http://localhost:8501`
+Access web interface: `http://localhost:8501`
 
-## 🔑 Environment Variables
-Create `.env` file based on `.env.example`:
-```env
-SECRET_KEY_TOKEN=your_secret_key
-APP_NAME=your_app_name
-VERSION=your_version
+### Docker Development Container
+```bash
+# Open in VS Code
+code .
+
+# Click "Reopen in Container" when prompted
 ```
-
-## 📊 Models
-
-### Random Forest (`forest_tuned.pkl`)
-- Tuned for optimal performance
-- Used for primary predictions
-
-### XGBoost (`XGoost.pkl`)
-- Alternative model
-- Optimized for specific use cases
-
-### Preprocessor (`Preprocessor.pkl`)
-- Handles data transformation
-- Feature scaling and encoding
-
-## 📈 Dataset
-The `Churn_Modelling.csv` dataset includes:
-- Customer demographic information
-- Banking behavior data
-- Churn status
-
-## 🛠️ Development
-
-### Model Training
-1. Open `Notebooks/main.ipynb`
-2. Follow the training pipeline
-3. Export models to `models/` directory
-
-### API Development
-Modify `mainroot.py` for API changes:
-```python
-@app.post('/predict/forest', tags=['Models'])
-async def predict_forest(data: CustmerData, api_key: str = Depends(verify_api_key)) -> dict:
-    # Implementation
-```
-
-### Streamlit Interface Development
-Modify `Sttr_app.py` for UI changes.
 
 ## 🧪 Testing
-1. API testing:
+
+### Running API Tests
 ```bash
-# Add your testing commands
+# Install test dependencies
+pip install pytest pytest-cov httpx
+
+# Run all tests
+pytest tests/
+
+# Run with coverage
+pytest --cov=app tests/
 ```
 
-2. Model testing:
+### Model Testing
 ```bash
-# Add your testing commands
+# Run model validation
+pytest tests/test_models.py
+
+# Run preprocessing tests
+pytest tests/test_preprocessing.py
+```
+
+### Create Test Files:
+
+1. **API Tests** (`tests/test_api.py`):
+```python
+import pytest
+from fastapi.testclient import TestClient
+from mainroot import app
+
+client = TestClient(app)
+
+def test_home_endpoint():
+    response = client.get("/")
+    assert response.status_code == 200
+
+def test_predict_forest():
+    headers = {"X-API-Key": "test-key"}
+    test_data = {
+        "CreditScore": 700,
+        "Geography": "France",
+        "Gender": "Male",
+        "Age": 35,
+        "Tenure": 5,
+        "Balance": 75000.0,
+        "NumOfProducts": 2,
+        "HasCrCard": 1,
+        "IsActiveMember": 1,
+        "EstimatedSalary": 50000.0
+    }
+    response = client.post("/predict/forest", json=test_data, headers=headers)
+    assert response.status_code == 200
+```
+
+2. **Model Tests** (`tests/test_models.py`):
+```python
+import pytest
+import joblib
+from utils.inference import predict_new
+from utils.CustumerData import CustmerData
+
+def test_model_loading():
+    forest_model = joblib.load('models/forest_tuned.pkl')
+    xgboost_model = joblib.load('models/XGoost.pkl')
+    preprocessor = joblib.load('models/Preprocessor.pkl')
+    assert all([forest_model, xgboost_model, preprocessor])
+
+def test_prediction():
+    test_data = CustmerData(
+        CreditScore=700,
+        Geography="France",
+        Gender="Male",
+        Age=35,
+        Tenure=5,
+        Balance=75000.0,
+        NumOfProducts=2,
+        HasCrCard=1,
+        IsActiveMember=1,
+        EstimatedSalary=50000.0
+    )
+    result = predict_new(test_data)
+    assert "prediction" in result
+```
+
+## 📊 API Endpoints
+
+### Authentication
+All prediction endpoints require API key in header:
+```
+X-API-Key: your-secret-key
+```
+
+### Endpoints
+1. **Home**
+   - `GET /`
+   - Welcome message and version info
+
+2. **Random Forest Prediction**
+   - `POST /predict/forest`
+   - Requires customer data in request body
+
+3. **XGBoost Prediction**
+   - `POST /predict/XGoost`
+   - Requires customer data in request body
+
+## 📈 Data Model
+```python
+class CustmerData(BaseModel):
+    CreditScore: int
+    Geography: Literal["France", "Spain", "Germany"]
+    Gender: Literal["Male", "Female"]
+    Age: int
+    Tenure: int
+    Balance: float
+    NumOfProducts: int
+    HasCrCard: Literal[0, 1]
+    IsActiveMember: Literal[0, 1]
+    EstimatedSalary: float
 ```
 
 ## 🔒 Security
-- API key authentication implemented
+- API key authentication
 - Environment variable protection
 - Docker container isolation
 
-## 🤝 Contributing
-1. Fork the repository
+## 🚀 Deployment
+1. **Build Docker image:**
+```bash
+docker build -t churn-predictor .
+```
+
+2. **Run container:**
+```bash
+docker run -p 8000:8000 -p 8501:8501 churn-predictor
+```
+
+## ⚠️ Troubleshooting
+
+### Common Issues
+1. **Import Errors:**
+   - Check Python version (3.12 required)
+   - Verify virtual environment activation
+   - Confirm all dependencies installed
+
+2. **Model Loading Errors:**
+   - Verify model files in `models/` directory
+   - Check file permissions
+   - Confirm pickle version compatibility
+
+3. **API Key Issues:**
+   - Check `.env` file exists
+   - Verify SECRET_KEY_TOKEN setting
+   - Confirm header format in requests
+
+## 📝 Contributing
+1. Fork repository
 2. Create feature branch
 3. Commit changes
 4. Push to branch
 5. Submit pull request
 
-## 📝 License
+## 📄 License
 [Add your license information]
 
-## ⚠️ Troubleshooting
-
-### Common Issues
-1. Model Loading Errors:
-   - Verify model files in `models/` directory
-   - Check Python version compatibility
-
-2. Environment Variables:
-   - Ensure `.env` file exists
-   - Check variable names match `.env.example`
-
-3. Container Issues:
-   - Verify Docker installation
-   - Check devcontainer.json configuration
-
 ## 📞 Support
-For support:
 - Open an issue
-- Contact [your-contact-information]
-
-## 🔄 Version History
-- Current Version: [Your Version]
-- [Add version history]
+- Contact: [your-contact-information]
 
 ## 🙏 Acknowledgments
 - FastAPI
