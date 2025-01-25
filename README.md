@@ -274,7 +274,7 @@ docker run -p 8000:8000 -p 8501:8501 churn-predictor
 
 ## 📞 Support
 - Open an issue
-- Contact: [your-contact-information]
+- Contact: [Email:mostafamahmudm13@gmail.com]
 
 ## 🙏 Acknowledgments
 - FastAPI
